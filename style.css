@@ -1,0 +1,169 @@
+body {
+    background-color: #1a1a2e;
+    color: #e8e0d0;
+    font-family: Georgia, serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    margin: 0;
+}
+
+h1 {
+    color: #c9a227;
+    text-align: center;
+}
+
+#progress-wrap {
+    width: 600px;
+    max-width: 92vw;
+    margin-bottom: 24px;
+}
+
+#progress-bar {
+    background-color: #2d1b2e;
+    border: 2px solid #c9a227;
+    border-radius: 10px;
+    height: 22px;
+    overflow: hidden;
+}
+
+#progress-fill {
+    background-color: #c9a227;
+    height: 100%;
+    width: 0%;
+    transition: width 0.4s;
+}
+
+#progress-text {
+    text-align: center;
+    color: #a89a7a;
+}
+
+#parts-list {
+    width: 600px;
+    max-width: 92vw;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.part {
+    background-color: #2d1b2e;
+    border: 2px solid #c9a227;
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.part.posted {
+    opacity: 0.55;
+}
+
+.part.posted .part-title {
+    text-decoration: line-through;
+}
+
+.part input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #c9a227;
+    flex-shrink: 0;
+}
+
+.part label {
+    display: flex;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.part-date {
+    color: #c9a227;
+    white-space: nowrap;
+    min-width: 90px;
+}
+
+.part-title {
+    color: #e8e0d0;
+}
+
+#up-next {
+    width: 600px;
+    max-width: 92vw;
+    background-color: #2d1b2e;
+    border: 2px solid #c9a227;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 18px;
+}
+
+#up-next strong {
+    color: #c9a227;
+}
+
+#book-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+    width: 600px;
+    max-width: 92vw;
+}
+
+.tab {
+    background-color: #2d1b2e;
+    color: #e8e0d0;
+    border: 2px solid #c9a227;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-family: Georgia, serif;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.tab.active {
+    background-color: #c9a227;
+    color: #1a1a2e;
+}
+
+.tab.add-tab {
+    border-style: dashed;
+}
+
+#add-part {
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+    width: 600px;
+    max-width: 92vw;
+}
+
+#add-part input {
+    background-color: #2d1b2e;
+    color: #e8e0d0;
+    border: 2px solid #c9a227;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-family: Georgia, serif;
+    font-size: 15px;
+}
+
+#new-part-title {
+    flex-grow: 1;
+}
+
+#add-part-btn {
+    background-color: #c9a227;
+    color: #1a1a2e;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-family: Georgia, serif;
+    font-size: 15px;
+    cursor: pointer;
+}

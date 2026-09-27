@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wattpad Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+</head>
+<body>
+    <h1 id="book-title">Wattpad Tracker</h1>
+    <div id="up-next"></div>
+    <div id="book-tabs"></div>
+    <div id="progress-wrap">
+        <div id="progress-bar"><div id="progress-fill"></div></div>
+        <p id="progress-text"></p>
+    </div>
+    <div id="parts-list"></div>
+    <div id="add-part">
+        <input type="date" id="new-part-date">
+        <input type="text" id="new-part-title" placeholder="Part title">
+        <button id="add-part-btn">Add Part</button>
+    </div>
+
+
+    <script>
+        const seedSchedule = [
+            { date: '2026-09-25', title: 'Chapter Two — Grief Is a Selfish Thing', posted: false },
+            { date: '2026-09-29', title: 'Chapter Three — What Aristokles Left Behind', posted: false },
+            { date: '2026-10-02', title: 'Chapter Four — The Intercepted Letters', posted: false },
+            { date: '2026-10-06', title: 'Chapter Five — The Palace Had a Memory', posted: false },
+            { date: '2026-10-09', title: "Chapter Six — Nahid's Debts", posted: false },
+            { date: '2026-10-13', title: 'Chapter Seven — The Seventh Day', posted: false },
+            { date: '2026-10-16', title: 'Chapter Eight — The Door in the Dark', posted: false },
+            { date: '2026-10-20', title: 'Chapter Nine — Not a Cell', posted: false },
+            { date: '2026-10-23', title: 'Chapter 9B — When the Channels Closed', posted: false },
+            { date: '2026-10-27', title: 'Chapter Ten — Three Days After Bardiya', posted: false },
+            { date: '2026-10-30', title: 'Chapter 10B — Nahid, Alone', posted: false },
+            { date: '2026-11-03', title: 'Chapter Eleven — Not Thinking About It', posted: false },
+            { date: '2026-11-06', title: 'Chapter Eleven B — Nearly Out of Time', posted: false },
+            { date: '2026-11-10', title: 'Chapter Twelve — Rearranged', posted: false },
+            { date: '2026-11-13', title: 'Chapter Thirteen — Everything on the Table', posted: false },
+            { date: '2026-11-17', title: 'Chapter Thirteen B — The Hardest Thing', posted: false },
+            { date: '2026-11-20', title: 'Chapter Fourteen — Together', posted: false },
+            { date: '2026-11-24', title: 'Chapter Fifteen — Not a Trumpet', posted: false },
+            { date: '2026-11-27', title: 'Chapter Sixteen — Almost Always Right', posted: false },
+            { date: '2026-12-01', title: 'Chapter Seventeen — Something Had Changed', posted: false },
+            { date: '2026-12-04', title: 'Chapter Eighteen — The Water', posted: false },
+            { date: '2026-12-08', title: 'Epilogue', posted: false }
+        ];
+
+       let books;
+        let activeBook = 0;
+        const savedBooks = localStorage.getItem('wattpadBooks');
+        if (savedBooks) {
+            const data = JSON.parse(savedBooks);
+            books = data.books;
+            activeBook = data.activeBook;
+        } else {
+            const oldParts = localStorage.getItem('wattpadParts');
+            const silkParts = oldParts ? JSON.parse(oldParts) : seedSchedule;
+            books = [{ title: 'Silk Shadows', parts: silkParts }];
+            saveBooks();
+        }
+
+        function saveBooks() {
+            localStorage.setItem('wattpadBooks', JSON.stringify({ books: books, activeBook: activeBook }));
+        }
+
+        function currentParts() {
+            return books[activeBook].parts;
+        }
+
+
+        function formatDate(iso) {
+            const d = new Date(iso + 'T00:00:00');
+            return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+
+        function updateProgress() {
+            const parts = currentParts();
+            const posted = parts.filter(function(part) { return part.posted; }).length;
+            document.getElementById('progress-text').textContent = posted + ' of ' + parts.length + ' posted';
+            document.getElementById('progress-fill').style.width = (posted / parts.length * 100) + '%';
+        }
+        function renderParts() {
+            const list = document.getElementById('parts-list');
+            list.innerHTML = '';
+            currentParts().forEach(function(part, index) {
+                const row = document.createElement('div');
+                row.className = 'part' + (part.posted ? ' posted' : '');
+                row.innerHTML =
+                    '<input type="checkbox" id="part-' + index + '"' + (part.posted ? ' checked' : '') + '>' +
+                    '<label for="part-' + index + '">' +
+                    '<span class="part-date">' + formatDate(part.date) + '</span>' +
+                    '<span class="part-title">' + part.title + '</span>' +
+                    '</label>';
+                row.querySelector('input').addEventListener('change', function(event) {
+                    currentParts()[index].posted = event.target.checked;
+                    saveBooks();
+                    renderParts();
+                });
+                list.appendChild(row);
+            });
+            updateProgress();
+            updateUpNext();
+        }
+
+        function renderTabs() {
+            const tabs = document.getElementById('book-tabs');
+            tabs.innerHTML = '';
+            books.forEach(function(book, index) {
+                const tab = document.createElement('button');
+                tab.textContent = book.title;
+                tab.className = 'tab' + (index === activeBook ? ' active' : '');
+                tab.addEventListener('click', function() {
+                    activeBook = index;
+                    saveBooks();
+                    renderAll();
+                });
+                tabs.appendChild(tab);
+            });
+            const addBtn = document.createElement('button');
+            addBtn.textContent = '+ New Book';
+            addBtn.className = 'tab add-tab';
+            addBtn.addEventListener('click', function() {
+                const title = prompt('Book title:');
+                if (title && title.trim()) {
+                    books.push({ title: title.trim(), parts: [] });
+                    activeBook = books.length - 1;
+                    saveBooks();
+                    renderAll();
+                }
+            });
+            tabs.appendChild(addBtn);
+        }
+
+        function renderAll() {
+            renderTabs();
+            document.getElementById('book-title').textContent = books[activeBook].title;
+            renderParts();
+        }
+
+        document.getElementById('add-part-btn').addEventListener('click', function() {
+            const date = document.getElementById('new-part-date').value;
+            const title = document.getElementById('new-part-title').value.trim();
+            if (!date || !title) return;
+            currentParts().push({ date: date, title: title, posted: false });
+            currentParts().sort(function(a, b) {
+                return a.date < b.date ? -1 : (a.date > b.date ? 1 : 0);
+            });
+            document.getElementById('new-part-date').value = '';
+            document.getElementById('new-part-title').value = '';
+            saveBooks();
+            renderAll();
+        });
+        renderAll();
+
+        function updateUpNext() {
+            const next = currentParts().find(function(part) { return !part.posted; });
+            const banner = document.getElementById('up-next');
+            if (!next) {
+                banner.innerHTML = '<strong>Rollout complete!</strong> Every part is posted.';
+                return;
+            }
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const isOverdue = new Date(next.date + 'T00:00:00') < today;
+            banner.innerHTML = '<strong>' + (isOverdue ? 'Overdue:' : 'Up next:') + '</strong> ' +
+                next.title + ' <span class="part-date">' + formatDate(next.date) + '</span>';
+        }
+
+    </script>
+</body>
+</html>
